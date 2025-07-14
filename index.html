@@ -5,142 +5,653 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理后台控制面板</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papYIioS9XcXekg8I3zqPoGqJqvQxtpWx5y+tY2AIOZ5LCaokvX7sV7LJ4UAD0cOdTuSnW4b+4+1n1zUKQm1Nw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --sidebar-width: 260px;
             --primary-color: #4361ee;
-            --light-color: #f8f9fa;
+            --secondary-color: #3f37c9;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #e63946;
             --dark-color: #1d3557;
+            --light-color: #f8f9fa;
         }
+        
         body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: #f4f6f8;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fb;
+            overflow-x: hidden;
         }
+        
+        /* 侧边栏样式 */
         .sidebar {
-            position: fixed;
-            top: 0; left: 0;
-            height: 100vh;
             width: var(--sidebar-width);
-            background: var(--dark-color);
+            background: linear-gradient(180deg, var(--dark-color), var(--secondary-color));
             color: white;
-            padding-top: 60px;
+            height: 100vh;
+            position: fixed;
+            transition: all 0.3s;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
         }
-        .sidebar a {
-            display: block;
-            padding: 15px 20px;
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            margin: 5px 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .sidebar .nav-link:hover, 
+        .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
             color: white;
-            text-decoration: none;
         }
-        .sidebar a:hover {
-            background-color: rgba(255,255,255,0.1);
+        
+        .sidebar .nav-link .badge {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
         }
+        
+        .submenu {
+            padding-left: 45px;
+        }
+        
+        .submenu .nav-link {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            margin: 2px 15px;
+        }
+        
+        /* 主内容区域 */
         .main-content {
             margin-left: var(--sidebar-width);
-            padding: 40px;
+            padding: 20px;
+            transition: margin 0.3s;
         }
+        
+        /* 顶部导航 */
+        .topbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--dark-color);
+            font-size: 1.2rem;
+            display: none;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--success-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        /* 统计卡片 */
         .stat-card {
             background: white;
-            border-radius: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .stat-title {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        /* 产品展示 */
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .product-img {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--warning-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .product-body {
+            padding: 20px;
+        }
+        
+        .product-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .sidebar {
+                margin-left: -260px;
+            }
+            
+            .sidebar.active {
+                margin-left: 0;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .toggle-btn {
+                display: block;
+            }
+        }
+        
+        .section-title {
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            height: 100%;
         }
     </style>
 </head>
 <body>
+    <!-- 侧边栏 -->
     <div class="sidebar">
-        <h5 class="text-center">后台菜单</h5>
-        <a href="#">仪表盘</a>
-        <a href="#">用户管理</a>
-        <a href="#">销售报表</a>
-        <a href="#">库存数据</a>
-        <a href="#">退出</a>
+        <div class="sidebar-header">
+            <h4><i class="fas fa-cogs me-2"></i>管理后台</h4>
+        </div>
+        
+        <nav class="flex-column mt-4">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-tachometer-alt"></i>控制面板
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#userManagement">
+                        <i class="fas fa-users"></i>用户管理
+                        <span class="badge bg-success float-end">2</span>
+                    </a>
+                    <div class="collapse show submenu" id="userManagement">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">用户权限列表</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">用户修改</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#permissionManagement">
+                        <i class="fas fa-key"></i>权限管理
+                    </a>
+                    <div class="collapse submenu" id="permissionManagement">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">用户权限列表</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#dataReports">
+                        <i class="fas fa-chart-bar"></i>数据报表
+                        <span class="badge bg-warning float-end">3</span>
+                    </a>
+                    <div class="collapse submenu" id="dataReports">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">数据列表</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">数据扩展</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">数据展示</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#imageManagement">
+                        <i class="fas fa-image"></i>图片规格
+                    </a>
+                    <div class="collapse submenu" id="imageManagement">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">图片可自行切割/压缩</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">图片压缩1MB</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#productManagement">
+                        <i class="fas fa-box"></i>产品管理
+                        <span class="badge bg-primary float-end">5</span>
+                    </a>
+                    <div class="collapse submenu" id="productManagement">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">上架产品</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">产品修改</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">下架产品</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">产品展示</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">预存上架</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">新增产品</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">确认上架</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cog"></i>系统设置
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
-
+    
+    <!-- 主内容区 -->
     <div class="main-content">
-        <h2>欢迎回来，管理员！</h2>
-
-        <div class="row">
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <h6>今日报告数</h6>
-                    <p class="stat-number fs-4">128</p>
-                </div>
+        <!-- 顶部导航 -->
+        <div class="topbar">
+            <div>
+                <button class="toggle-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span class="ms-3">管理员控制面板</span>
             </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <h6>用户总数</h6>
-                    <p class="stat-number fs-4">856</p>
+            
+            <div class="user-info">
+                <div class="me-3">
+                    <i class="fas fa-bell text-muted fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        3
+                    </span>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <h6>库存总量</h6>
-                    <p class="stat-number fs-4">1,520</p>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+                        <div class="user-avatar me-2">SA</div>
+                        <div>
+                            <div class="fw-bold">超级管理员</div>
+                            <div class="text-muted small">IT部门</div>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>个人资料</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>设置</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>退出</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
-
-        <canvas id="reportChart" height="100"></canvas>
-        <br>
-        <canvas id="reportPieChart" height="100"></canvas>
+        
+        <!-- 统计卡片 -->
+        <h4 class="section-title">数据概览</h4>
+        <div class="row mb-5">
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-icon text-primary">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-number">42</div>
+                    <div class="stat-title">今日报告数量</div>
+                    <div class="text-success small mt-2">
+                        <i class="fas fa-arrow-up"></i> 12% 较昨日
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-icon text-success">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <div class="stat-number">218</div>
+                    <div class="stat-title">本周报告数量</div>
+                    <div class="text-success small mt-2">
+                        <i class="fas fa-arrow-up"></i> 8% 较上周
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-icon text-warning">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <div class="stat-number">892</div>
+                    <div class="stat-title">本月报告数量</div>
+                    <div class="text-danger small mt-2">
+                        <i class="fas fa-arrow-down"></i> 3% 较上月
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <div class="stat-icon text-danger">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <div class="stat-number">36</div>
+                    <div class="stat-title">销售员人数</div>
+                    <div class="text-success small mt-2">
+                        <i class="fas fa-arrow-up"></i> 新增2人
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 图表区域 -->
+        <div class="row mb-5">
+            <div class="col-md-8">
+                <div class="chart-container">
+                    <h5 class="mb-4">报告数量趋势</h5>
+                    <canvas id="reportChart" height="300"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="chart-container">
+                    <h5 class="mb-4">报告类型分布</h5>
+                    <canvas id="reportPieChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 新增产品展示 -->
+        <h4 class="section-title">新增产品展示</h4>
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="product-card">
+                    <div style="position: relative;">
+                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" 
+                             class="product-img" alt="智能手表">
+                        <span class="product-badge">新品</span>
+                    </div>
+                    <div class="product-body">
+                        <h5 class="product-title">智能手表 Pro 2023</h5>
+                        <p class="text-muted small">健康监测、GPS定位、防水设计</p>
+                        <div class="product-meta">
+                            <span>¥ 1,299</span>
+                            <span>库存: 128</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="product-card">
+                    <div style="position: relative;">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" 
+                             class="product-img" alt="无线耳机">
+                        <span class="product-badge">热卖</span>
+                    </div>
+                    <div class="product-body">
+                        <h5 class="product-title">无线降噪耳机 X2</h5>
+                        <p class="text-muted small">主动降噪、30小时续航、防水</p>
+                        <div class="product-meta">
+                            <span>¥ 899</span>
+                            <span>库存: 86</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="product-card">
+                    <div style="position: relative;">
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" 
+                             class="product-img" alt="智能手表">
+                        <span class="product-badge">新品</span>
+                    </div>
+                    <div class="product-body">
+                        <h5 class="product-title">便携式投影仪 Mini</h5>
+                        <p class="text-muted small">1080P高清、便携设计、无线投屏</p>
+                        <div class="product-meta">
+                            <span>¥ 1,599</span>
+                            <span>库存: 64</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="product-card">
+                    <div style="position: relative;">
+                        <img src="https://images.unsplash.com/photo-1504274066651-8d31a536b11a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" 
+                             class="product-img" alt="智能手表">
+                        <span class="product-badge">限量</span>
+                    </div>
+                    <div class="product-body">
+                        <h5 class="product-title">智能家居控制中心</h5>
+                        <p class="text-muted small">语音控制、多设备兼容、安全加密</p>
+                        <div class="product-meta">
+                            <span>¥ 2,299</span>
+                            <span>库存: 42</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" integrity="sha384-mIx6XxIOQ2z7PjMxzFIEexRDUC4KfT3T8d5QuFquQlCe7Xl2JD3KqlZnRUc6R1nK" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const reportCtx = document.getElementById('reportChart')?.getContext('2d');
-            const pieCtx = document.getElementById('reportPieChart')?.getContext('2d');
-
-            if (reportCtx) {
-                new Chart(reportCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月'],
-                        datasets: [{
-                            label: '报告数量',
-                            data: [650, 780, 810, 920, 880, 950, 1100],
-                            borderColor: '#4361ee',
-                            backgroundColor: 'rgba(67, 97, 238, 0.1)',
-                            tension: 0.3,
-                            fill: true
-                        }]
+        // 切换侧边栏
+        document.querySelector('.toggle-btn').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+        
+        // 初始化图表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 报告数量趋势图
+            const reportCtx = document.getElementById('reportChart').getContext('2d');
+            const reportChart = new Chart(reportCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月'],
+                    datasets: [{
+                        label: '报告数量',
+                        data: [650, 780, 810, 920, 880, 950, 1100],
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
                     },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { display: false } },
-                        scales: { y: { beginAtZero: true } }
-                    }
-                });
-            }
-
-            if (pieCtx) {
-                new Chart(pieCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['销售报告', '库存报告', '财务报告', '用户报告', '产品报告'],
-                        datasets: [{
-                            data: [35, 20, 15, 15, 15],
-                            backgroundColor: ['#4361ee', '#4cc9f0', '#f8961e', '#e63946', '#3a0ca3'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: { padding: 20 }
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
                             }
                         },
-                        cutout: '70%'
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
                     }
-                });
-            }
+                }
+            });
+            
+            // 报告类型饼图
+            const pieCtx = document.getElementById('reportPieChart').getContext('2d');
+            const pieChart = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['销售报告', '库存报告', '财务报告', '用户报告', '产品报告'],
+                    datasets: [{
+                        data: [35, 20, 15, 15, 15],
+                        backgroundColor: [
+                            '#4361ee',
+                            '#4cc9f0',
+                            '#f8961e',
+                            '#e63946',
+                            '#3a0ca3'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
         });
+        
+        // 模拟数据更新
+        setInterval(() => {
+            const dailyReport = document.querySelector('.stat-card:first-child .stat-number');
+            const count = parseInt(dailyReport.textContent);
+            dailyReport.textContent = count + Math.floor(Math.random() * 3);
+        }, 5000);
     </script>
 </body>
 </html>
