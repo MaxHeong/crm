@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台控制面板</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papYIioS9XcXekg8I3zqPoGqJqvQxtpWx5y+tY2AIOZ5LCaokvX7sV7LJ4UAD0cOdTuSnW4b+4+1n1zUKQm1Nw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --primary-color: #4361ee;
+            --light-color: #f8f9fa;
+            --dark-color: #1d3557;
+        }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f6f8;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0; left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: var(--dark-color);
+            color: white;
+            padding-top: 60px;
+        }
+        .sidebar a {
+            display: block;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 40px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h5 class="text-center">后台菜单</h5>
+        <a href="#">仪表盘</a>
+        <a href="#">用户管理</a>
+        <a href="#">销售报表</a>
+        <a href="#">库存数据</a>
+        <a href="#">退出</a>
+    </div>
+
+    <div class="main-content">
+        <h2>欢迎回来，管理员！</h2>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <h6>今日报告数</h6>
+                    <p class="stat-number fs-4">128</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <h6>用户总数</h6>
+                    <p class="stat-number fs-4">856</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <h6>库存总量</h6>
+                    <p class="stat-number fs-4">1,520</p>
+                </div>
+            </div>
+        </div>
+
+        <canvas id="reportChart" height="100"></canvas>
+        <br>
+        <canvas id="reportPieChart" height="100"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" integrity="sha384-mIx6XxIOQ2z7PjMxzFIEexRDUC4KfT3T8d5QuFquQlCe7Xl2JD3KqlZnRUc6R1nK" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const reportCtx = document.getElementById('reportChart')?.getContext('2d');
+            const pieCtx = document.getElementById('reportPieChart')?.getContext('2d');
+
+            if (reportCtx) {
+                new Chart(reportCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月'],
+                        datasets: [{
+                            label: '报告数量',
+                            data: [650, 780, 810, 920, 880, 950, 1100],
+                            borderColor: '#4361ee',
+                            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+
+            if (pieCtx) {
+                new Chart(pieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['销售报告', '库存报告', '财务报告', '用户报告', '产品报告'],
+                        datasets: [{
+                            data: [35, 20, 15, 15, 15],
+                            backgroundColor: ['#4361ee', '#4cc9f0', '#f8961e', '#e63946', '#3a0ca3'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { padding: 20 }
+                            }
+                        },
+                        cutout: '70%'
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
